@@ -42,6 +42,8 @@ func (v *Vector3D) ScalarMultiply(scale float64) {
 
 // AddScaledVector adds a vector scaled by a value (v += other * scale).
 // This is critical for the physics integration step.
+// if the values were velocity and time then
+// it would be position + displacement ( displacement = velocity * time)
 func (v *Vector3D) AddScaledVector(other Vector3D, scale float64) {
 	v.X += other.X * scale
 	v.Y += other.Y * scale
