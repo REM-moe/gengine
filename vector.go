@@ -107,7 +107,7 @@ func (v *Vector3D) Substracted(other Vector3D) Vector3D {
 }
 
 // component product
-// does the component product or cross product and returns a new vector
+// does the component product and returns a new vector
 func (v *Vector3D) ComponentProductUpdate(other Vector3D) Vector3D {
 	return Vector3D{
 		X: v.X * other.X,
