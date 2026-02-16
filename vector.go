@@ -122,4 +122,8 @@ func (v *Vector3D) ComponentProduct(other Vector3D) {
 	v.Z *= other.Z
 }
 
-/// scalar product
+// / scalar product
+// ax.bx + ay.by + az.bz
+func (v *Vector3D) ScalarProduct(other Vector3D) float64 {
+	return v.X*other.X + v.Y*other.Y + v.Z*other.Z
+}
