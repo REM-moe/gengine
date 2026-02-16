@@ -86,6 +86,7 @@ func (v *Vector3D) Substract(other Vector3D) {
 }
 
 // returns new vector
+// this retunrs a new vector
 func (v Vector3D) Added(other Vector3D) Vector3D {
 
 	return Vector3D{
@@ -96,6 +97,7 @@ func (v Vector3D) Added(other Vector3D) Vector3D {
 }
 
 // retunrs new vector
+// this returns a new vector
 func (v *Vector3D) Substracted(other Vector3D) Vector3D {
 	return Vector3D{
 		X: v.X - other.X,
@@ -103,3 +105,21 @@ func (v *Vector3D) Substracted(other Vector3D) Vector3D {
 		Z: v.Z - other.Z,
 	}
 }
+
+// component product
+// does the component product or cross product and returns a new vector
+func (v *Vector3D) ComponentProductUpdate(other Vector3D) Vector3D {
+	return Vector3D{
+		X: v.X * other.X,
+		Y: v.Y * other.Y,
+		Z: v.Z * other.Z,
+	}
+}
+
+func (v *Vector3D) ComponentProduct(other Vector3D) {
+	v.X *= other.X
+	v.Y *= other.Y
+	v.Z *= other.Z
+}
+
+/// scalar product
