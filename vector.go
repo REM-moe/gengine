@@ -2,6 +2,10 @@ package gengine
 
 import "math"
 
+// for pointers in in place modifications the funtion names would be
+// add()
+// and for the ones that modify and return a new its - added()
+
 // Vector3D represents a point or displacement in 3D space.
 type Vector3D struct {
 	X, Y, Z float64
@@ -44,6 +48,7 @@ func (v Vector3D) Scaled(s float64) Vector3D {
 }
 
 // magnitude of the vector root( x2 + y2 + z2 )
+// returns a float64
 func (v Vector3D) Magnitude() float64 {
 	return math.Sqrt(v.X*v.X + v.Y*v.Y + v.Z*v.Z)
 }
@@ -62,5 +67,39 @@ func (v *Vector3D) Normalize() {
 		v.X *= inv
 		v.Y *= inv
 		v.Z *= inv
+	}
+}
+
+// Add adds another vector to this one (v = v + other)
+// "v" is the receiver. "other" is the argument.
+func (v *Vector3D) Add(other Vector3D) {
+	v.X += other.X
+	v.Y += other.Y
+	v.Z += other.Z
+}
+
+// add another vector original vector ir modifying it
+func (v *Vector3D) Substract(other Vector3D) {
+	v.X -= other.X
+	v.Y -= other.Y
+	v.Z -= other.Z
+}
+
+// returns new vector
+func (v Vector3D) Added(other Vector3D) Vector3D {
+
+	return Vector3D{
+		X: v.X + other.X,
+		Y: v.Y + other.Y,
+		Z: v.Z + other.Z,
+	}
+}
+
+// retunrs new vector
+func (v *Vector3D) Substracted(other Vector3D) Vector3D {
+	return Vector3D{
+		X: v.X - other.X,
+		Y: v.Y - other.Y,
+		Z: v.Z - other.Z,
 	}
 }
