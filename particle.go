@@ -47,3 +47,10 @@ func (p *Particle) Integrate(duration float64) {
 	p.Velocity.ScalarMultiply(math.Pow(p.Damping, duration))
 
 }
+
+// ClearAccumulator clears the forces for the next frame
+func (p *Particle) ClearAccumulator() {
+	p.ForceAccum.X = 0
+	p.ForceAccum.Y = 0
+	p.ForceAccum.Z = 0
+}
