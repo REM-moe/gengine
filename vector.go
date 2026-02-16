@@ -127,3 +127,26 @@ func (v *Vector3D) ComponentProduct(other Vector3D) {
 func (v *Vector3D) ScalarProduct(other Vector3D) float64 {
 	return v.X*other.X + v.Y*other.Y + v.Z*other.Z
 }
+
+// CrossProduct calculates the vector product of this vector with another.
+// This updates the vector in-place (v = v % other).
+func (v *Vector3D) CrossProduct(other Vector3D) {
+	//    (Formula: xyz -> yz, zx, xy)
+	newX := (v.Y * other.Z) - (v.Z * other.Y)
+	newY := (v.Z * other.X) - (v.X * other.Z)
+	newZ := (v.X * other.Y) - (v.Y * other.X)
+
+	v.X = newX
+	v.Y = newY
+	v.Z = newZ
+}
+
+// Cross returns a NEW vector that is the cross product (v x other).
+// This does NOT modify the original vector.
+func (v Vector3D) Cross(other Vector3D) Vector3D {
+	return Vector3D{
+		X: (v.Y * other.Z) - (v.Z * other.Y),
+		Y: (v.Z * other.X) - (v.X * other.Z),
+		Z: (v.X * other.Y) - (v.Y * other.X),
+	}
+}
