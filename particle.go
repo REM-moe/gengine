@@ -19,7 +19,7 @@ type Particle struct {
 
 // we update the position
 // we update the velocity
-func (p *Particle) integrate(duration float64) {
+func (p *Particle) Integrate(duration float64) {
 	// 1. Sanity check: We can't integrate backward in time
 	if duration <= 0 {
 		return
