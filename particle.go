@@ -1,4 +1,4 @@
-package gengine
+package main
 
 type Particle struct {
 	Position Vector3D

@@ -1,4 +1,4 @@
-package gengine
+package main
 
 import "math"
 
