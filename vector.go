@@ -2,64 +2,73 @@ package gengine
 
 import "math"
 
-// for pointers in in place modifications the funtion names would be
-// add()
-// and for the ones that modify and return a new its - added()
-
 // Vector3D represents a point or displacement in 3D space.
 type Vector3D struct {
 	X, Y, Z float64
 }
 
-// this retunrs a new struct
-func NewVector3D(x, y, z float64) Vector3D {
-	return Vector3D{X: x, Y: y, Z: z}
-}
+// -----------------------------------------------------------------------------
+// BASIC MATH (IN-PLACE MODIFIERS)
+// These methods modify the existing vector. Use these for physics updates.
+// -----------------------------------------------------------------------------
 
-// Invert flips the direction of the vector in-place.
-// We use a pointer receiver (*Vector3D) because we are changing the data.
+// Invert flips the direction of the vector.
 func (v *Vector3D) Invert() {
 	v.X = -v.X
 	v.Y = -v.Y
 	v.Z = -v.Z
 }
 
-// AddScaledVector is a classic Millington function: v += other * scale
-func (v *Vector3D) AddScaledVector(other Vector3D, scale float64) {
-	v.X += other.X * scale
-	v.Y += other.Y * scale
-	v.Z += other.Z * scale
+// Add adds another vector to this one (v += other).
+func (v *Vector3D) Add(other Vector3D) {
+	v.X += other.X
+	v.Y += other.Y
+	v.Z += other.Z
 }
 
-// in place we scalar multiply
+// Subtract removes another vector from this one (v -= other).
+func (v *Vector3D) Subtract(other Vector3D) {
+	v.X -= other.X
+	v.Y -= other.Y
+	v.Z -= other.Z
+}
+
+// ScalarMultiply scales the vector by a number (v *= scale).
 func (v *Vector3D) ScalarMultiply(scale float64) {
 	v.X *= scale
 	v.Y *= scale
 	v.Z *= scale
 }
 
-// returns a new vector
-func (v Vector3D) Scaled(s float64) Vector3D {
-	return Vector3D{
-		X: v.X * s,
-		Y: v.Y * s,
-		Z: v.Z * s,
-	}
+// AddScaledVector adds a vector scaled by a value (v += other * scale).
+// This is critical for the physics integration step.
+func (v *Vector3D) AddScaledVector(other Vector3D, scale float64) {
+	v.X += other.X * scale
+	v.Y += other.Y * scale
+	v.Z += other.Z * scale
 }
 
-// magnitude of the vector root( x2 + y2 + z2 )
-// returns a float64
-func (v Vector3D) Magnitude() float64 {
-	return math.Sqrt(v.X*v.X + v.Y*v.Y + v.Z*v.Z)
+// ComponentProductUpdate multiplies this vector by another vector component-wise.
+// (v.x *= other.x, etc.)
+func (v *Vector3D) ComponentProductUpdate(other Vector3D) {
+	v.X *= other.X
+	v.Y *= other.Y
+	v.Z *= other.Z
 }
 
-// squareMagnitude is the faster version for comparisons
-// if we just wanna compare disctance this is enough
-func (v Vector3D) SquareMagnitude() float64 {
-	return v.X*v.X + v.Y*v.Y + v.Z*v.Z
+// CrossProduct calculates the cross product and updates this vector.
+func (v *Vector3D) CrossProduct(other Vector3D) {
+	// We use temp variables to avoid overwriting X before we need it for Z.
+	newX := (v.Y * other.Z) - (v.Z * other.Y)
+	newY := (v.Z * other.X) - (v.X * other.Z)
+	newZ := (v.X * other.Y) - (v.Y * other.X)
+
+	v.X = newX
+	v.Y = newY
+	v.Z = newZ
 }
 
-// normalize changes the vector to have a length of 1
+// Normalize changes the vector to have a length of 1.
 func (v *Vector3D) Normalize() {
 	length := v.Magnitude()
 	if length > 0 {
@@ -70,25 +79,13 @@ func (v *Vector3D) Normalize() {
 	}
 }
 
-// Add adds another vector to this one (v = v + other)
-// "v" is the receiver. "other" is the argument.
-func (v *Vector3D) Add(other Vector3D) {
-	v.X += other.X
-	v.Y += other.Y
-	v.Z += other.Z
-}
+// -----------------------------------------------------------------------------
+// PURE OPERATIONS (RETURN NEW VECTOR)
+// These methods return a NEW vector and do not change the original.
+// -----------------------------------------------------------------------------
 
-// add another vector original vector ir modifying it
-func (v *Vector3D) Substract(other Vector3D) {
-	v.X -= other.X
-	v.Y -= other.Y
-	v.Z -= other.Z
-}
-
-// returns new vector
-// this retunrs a new vector
+// Added returns a new vector that is the sum (v + other).
 func (v Vector3D) Added(other Vector3D) Vector3D {
-
 	return Vector3D{
 		X: v.X + other.X,
 		Y: v.Y + other.Y,
@@ -96,9 +93,8 @@ func (v Vector3D) Added(other Vector3D) Vector3D {
 	}
 }
 
-// retunrs new vector
-// this returns a new vector
-func (v *Vector3D) Substracted(other Vector3D) Vector3D {
+// Subtracted returns a new vector that is the difference (v - other).
+func (v Vector3D) Subtracted(other Vector3D) Vector3D {
 	return Vector3D{
 		X: v.X - other.X,
 		Y: v.Y - other.Y,
@@ -106,9 +102,17 @@ func (v *Vector3D) Substracted(other Vector3D) Vector3D {
 	}
 }
 
-// component product
-// does the component product and returns a new vector
-func (v *Vector3D) ComponentProductUpdate(other Vector3D) Vector3D {
+// Scaled returns a new vector scaled by a number (v * s).
+func (v Vector3D) Scaled(s float64) Vector3D {
+	return Vector3D{
+		X: v.X * s,
+		Y: v.Y * s,
+		Z: v.Z * s,
+	}
+}
+
+// ComponentProduct returns a new vector that is the component-wise product.
+func (v Vector3D) ComponentProduct(other Vector3D) Vector3D {
 	return Vector3D{
 		X: v.X * other.X,
 		Y: v.Y * other.Y,
@@ -116,37 +120,31 @@ func (v *Vector3D) ComponentProductUpdate(other Vector3D) Vector3D {
 	}
 }
 
-func (v *Vector3D) ComponentProduct(other Vector3D) {
-	v.X *= other.X
-	v.Y *= other.Y
-	v.Z *= other.Z
-}
-
-// / scalar product
-// ax.bx + ay.by + az.bz
-func (v *Vector3D) ScalarProduct(other Vector3D) float64 {
-	return v.X*other.X + v.Y*other.Y + v.Z*other.Z
-}
-
-// CrossProduct calculates the vector product of this vector with another.
-// This updates the vector in-place (v = v % other).
-func (v *Vector3D) CrossProduct(other Vector3D) {
-	//    (Formula: xyz -> yz, zx, xy)
-	newX := (v.Y * other.Z) - (v.Z * other.Y)
-	newY := (v.Z * other.X) - (v.X * other.Z)
-	newZ := (v.X * other.Y) - (v.Y * other.X)
-
-	v.X = newX
-	v.Y = newY
-	v.Z = newZ
-}
-
-// Cross returns a NEW vector that is the cross product (v x other).
-// This does NOT modify the original vector.
+// Cross returns a new vector that is the cross product (v x other).
 func (v Vector3D) Cross(other Vector3D) Vector3D {
 	return Vector3D{
 		X: (v.Y * other.Z) - (v.Z * other.Y),
 		Y: (v.Z * other.X) - (v.X * other.Z),
 		Z: (v.X * other.Y) - (v.Y * other.X),
 	}
+}
+
+// -----------------------------------------------------------------------------
+// QUERIES
+// -----------------------------------------------------------------------------
+
+// Magnitude returns the length of the vector.
+func (v Vector3D) Magnitude() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y + v.Z*v.Z)
+}
+
+// SquareMagnitude returns the squared length (faster for comparisons).
+func (v Vector3D) SquareMagnitude() float64 {
+	return v.X*v.X + v.Y*v.Y + v.Z*v.Z
+}
+
+// DotProduct (Scalar Product) returns the dot product of two vectors.
+// v . other = (x*x + y*y + z*z)
+func (v Vector3D) DotProduct(other Vector3D) float64 {
+	return v.X*other.X + v.Y*other.Y + v.Z*other.Z
 }
