@@ -27,7 +27,7 @@ func main() {
 			MaxVelocity: Vector3D{X: 5, Y: 35, Z: 5},
 			Damping:     0.99,
 			Payloads: []Payload{
-				{Type: 2, Count: 20},
+				{Type: 2, Count: 40},
 			},
 		},
 		{
