@@ -33,7 +33,7 @@ func (p *Particle) Integrate(duration float64) {
 	// Start with base acceleration (like gravity) [ 0, -g , 0]
 	resultingAcc := p.Accelaration
 
-	// Add the forces we accumulated (a = F/m)
+	//  the forces we accumulated (a = F/m)
 	// resultingAcc += force * inverseMass
 	resultingAcc.AddScaledVector(p.ForceAccum, p.InverseMass)
 
@@ -46,6 +46,7 @@ func (p *Particle) Integrate(duration float64) {
 	// We use math.Pow to make drag frame-rate independent
 	p.Velocity.ScalarMultiply(math.Pow(p.Damping, duration))
 
+	p.ClearAccumulator()
 }
 
 // ClearAccumulator clears the forces for the next frame
@@ -53,4 +54,8 @@ func (p *Particle) ClearAccumulator() {
 	p.ForceAccum.X = 0
 	p.ForceAccum.Y = 0
 	p.ForceAccum.Z = 0
+}
+
+func (p *Particle) AddForce(force Vector3D) {
+	p.ForceAccum.Added(force)
 }
